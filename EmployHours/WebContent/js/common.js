@@ -157,24 +157,16 @@ var commFillInfo = function(dataMap,selector,type){
 		}
 	});
 };
-/**自定义热键*/
-$import(basePath+'static/common/scripts/util/customHotKeys.js');
-/**时间日期控件*/
-$import(basePath+'static/common/scripts/util/dateTimePicker.js');
-/**分步表单封装*/
-$import(basePath+'static/common/scripts/util/stepForm.js');
 /**Ajax 封装*/
-$import(basePath+'static/common/scripts/util/ajax.js');
+$import(basePath+'js/util/ajax.js');
 /**自定义验证 封装*/
-$import(basePath+'static/common/scripts/util/customValid.js');
+$import(basePath+'js/util/customValid.js');
 /**照片保存 封装*/
-$import(basePath+'static/common/scripts/util/photoSave.js');
 /**对话框、提示框 封装*/
-$import(basePath+'static/common/scripts/util/dialogHintWin.js');
-/**people信息查询 封装*/
-$import(basePath+'static/common/scripts/util/queryPeople.js');
+$import(basePath+'js/util/dialogHintWin.js');
+/**people信息查询 
 /**页面初始化 封装*/
-$import(basePath+'static/common/scripts/util/loadPage.js');
+$import(basePath+'js/util/loadPage.js');
 
 /************Test DATA**************/
 var showTest=function(){

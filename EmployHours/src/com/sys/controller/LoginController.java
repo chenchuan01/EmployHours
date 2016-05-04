@@ -10,7 +10,9 @@ import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.mchange.v2.c3p0.stmt.GooGooStatementCache;
 import com.sys.SysConstants;
 import com.sys.base.BaseController;
 import com.sys.common.AppExpection;
@@ -69,19 +71,60 @@ public class LoginController extends BaseController {
 	@RequestMapping(value = "regist")
 	public String registUser(User user, Model m, String code,
 			HttpSession session) {
-		if (user == null || StringUtil.isNull(user.getUserName())
-				|| StringUtil.isNull(user.getPassword())) {
+		
+		if (user == null ||StringUtil.isNull(user.getEmpno())|| StringUtil.isNull(user.getPassword())) {
 			return forwordExpPage(m,
 					new AppExpection("LoginController.registUser(User,Model)",
-							"注册用户对象为空！请检查输入！"), REGISTPAGE);
+							"注册用户对象为空！请检查输入！"), LOGINPAGE);
 		}
+		user.setUserName(user.getEmpno());
 		boolean result = userService.userRegist(user) != null;
 		if (!result) {
 			return forwordExpPage(m, new AppExpection(
 					"LoginController.registUser(User,Model)",
-					"注册新用户出现异常！请联系管理员！"), REGISTPAGE);
+					"注册新用户出现异常！请联系管理员！"), LOGINPAGE);
 		}
-		return LOGINPAGE;
+		return TO_INDEX;
+	}
+	@RequestMapping(value = "forget")
+	public @ResponseBody User findPassword(User user, Model m, String code,
+			HttpSession session) throws AppExpection{
+		if (user == null || StringUtil.isNull(user.getName())
+				||StringUtil.isNull(user.getEmpno())
+				|| StringUtil.isNull(user.getPassword())) {
+				throw new AppExpection("LoginController.findPassword(User,Model)",
+							"用户对象为空！请检查输入！");
+		}
+		String newPwd = user.getPassword();
+		user.setPassword("");
+		User query = new User();
+		query.setEmpno(user.getEmpno());
+		User dbUser = userService.findEntity(query);
+		String errorMsg="";
+		if(!user.getName().equalsIgnoreCase(dbUser.getName())){
+			errorMsg = "员工姓名不匹配！";
+		}else if(!user.getEmpno().equalsIgnoreCase(dbUser.getEmpno())){
+			errorMsg = "员工工号不匹配！";
+		}else if(!user.getTel().equalsIgnoreCase(dbUser.getTel())){
+			errorMsg = "员工电话不匹配！";
+		}else if(!user.getIdno().equalsIgnoreCase(dbUser.getIdno())){
+			errorMsg = "身份证信息不匹配！";
+		}else if(!user.getBirth().equalsIgnoreCase(dbUser.getBirth())){
+			errorMsg = "出身日期不匹配！";
+		}else if(!user.getDep().equalsIgnoreCase(dbUser.getDep())){
+			errorMsg = "部门不匹配！";
+		}
+		if(StringUtil.isNotNull(errorMsg)){
+			throw new AppExpection("LoginController.findPassword(User,Model)", "密码重置失败，原因："+errorMsg);
+		}
+		dbUser.setPassword(newPwd);
+		user= userService.userUpdate(dbUser);
+		if (user==null) {
+			throw new AppExpection(
+					"LoginController.findPassword(User,Model)",
+					"密码找回出现异常！请联系管理员！");
+		}
+		return user;
 	}
 
 	@RequestMapping(value = "logout")

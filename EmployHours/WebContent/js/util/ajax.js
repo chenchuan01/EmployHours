@@ -30,7 +30,7 @@ var ajaxHtml= function(url,dataArry,sucfun,errFun){
 };
 var commonSuc=function(data,sucfun){
 	if(data.msg){
-		sysError(data);
+		error(data.msg);
 		return;
 	}
 	if(typeof(sucfun)=="function"){
@@ -38,6 +38,10 @@ var commonSuc=function(data,sucfun){
 	}
 };
 var commonErr=function(data,errFun){
+	if(data.msg){
+		error(data.msg);
+		return;
+	}
 	if(typeof(errFun)=="function"){
 		errFun(data);
 		return;

@@ -9,7 +9,7 @@ var initOther=function(){
 	/**清空表单*/
 	cleanForm();
     /**bootstrap mual init*/
-    bootstrapInit();
+   bootstrapInit();
 };
 var cleanForm=function(){
 	$('.cancel').click(function(){
@@ -26,8 +26,8 @@ var cleanForm=function(){
 	});
 };
 var bootstrapInit=function(){
-	 $('[data-toggle="popover"]').popover();
-	 $('[data-toggle="tooltip"]').tooltip();
+	 /*$('[data-toggle="popover"]').popover();
+	 $('[data-toggle="tooltip"]').tooltip();*/
 	 $('#formModal').on('hidden.bs.modal', function (e) {
 		 $('#formModal'+' .modal-title').text("");
 		 $('#formModal'+' .modal-body').html("");
