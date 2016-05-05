@@ -86,7 +86,33 @@ var $singledData= function(dataMap,filed){
 		return $isMapNull(dataMap,filed)?NONE_VAL_FLAG:$getDataVal(dataMap,filed);
 	}
 	
-}; 
+};
+function pageView(url){
+	ajaxHtml(url, {}, setContent, function(){});
+}
+function setContent(html){
+	$('#pageContent').html(html);
+	page(1);
+	bootstrapInit();
+}
+function goPage (newURL) {
+    // if url is empty, skip the menu dividers and reset the menu selection to default
+    if (newURL != "") {
+        // if url is "-", it is this page -- reset the menu:
+        if (newURL == "-" ) {
+            resetMenu();            
+        } 
+        // else, send page to designated URL            
+        else {  
+          document.location.href = newURL;
+        }
+    }
+}
+
+//resets the menu selection upon entry to this page:
+function resetMenu() {
+ document.gomenu.selector.selectedIndex = 2;
+}
 /**
  * 获得属性值
  */
