@@ -45,7 +45,16 @@ public class UserService extends BaseService<User>{
 		return userDao.regist(user);
 	}
 
-	
+	/**
+	 * 工号查询员工
+	 * @param empNo
+	 * @return
+	 */
+	public User queryByEmpNo(String empNo){
+		User query = new User();
+		query.setEmpno(empNo);
+		return findEntity(query);
+	}
 	
 	
 	

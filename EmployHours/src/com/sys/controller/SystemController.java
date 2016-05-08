@@ -12,6 +12,7 @@ import com.sys.base.BaseController;
 import com.sys.base.dto.PageResult;
 import com.sys.base.dto.QueryParam;
 import com.sys.common.AppExpection;
+import com.sys.common.util.SessionUtil;
 import com.sys.common.util.StringUtil;
 import com.sys.db.DBConstants;
 import com.sys.db.entity.Config;
@@ -61,6 +62,23 @@ public class SystemController extends BaseController {
 		User user = userService.findById(id);
 		m.addAttribute("user", user);
 		return FORM_SPACE+"userForm";
+	}
+	/**
+	 * ”√ªßœÍ«È
+	 * 
+	 * @param id
+	 * @param m
+	 * @return
+	 * @throws AppExpection
+	 */
+	@RequestMapping(value = "delBatchUser")
+	public @ResponseBody User delBatchUser(String delIds,HttpSession session) {
+		if(StringUtil.isNotNull(delIds)){
+			for(String id:delIds.split(",")){
+				userService.deleteEntity(new User(Integer.valueOf(id)));
+			}
+		}
+		return SessionUtil.sysUser(session);
 	}
 
 	/**

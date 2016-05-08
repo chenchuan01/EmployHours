@@ -3,7 +3,7 @@
 $(function(){page(1);});
 </script>
 <div class="span12">
-	<div class="span6 pull-right">
+	<div class="span12 pull-right">
 		<form id="search" class="form-inline pull-right" action="sys/configPage.do">
 		  <input type="text" class="input-middle" name="key" placeholder="配置名称">
 		  <input type="text" class="input-middle" name="value" placeholder="配置值">

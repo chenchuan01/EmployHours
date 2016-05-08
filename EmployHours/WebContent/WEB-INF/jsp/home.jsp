@@ -15,15 +15,19 @@
 %>
 <base href="<%=basePath%>"/>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
-<title>EmployHours</title>
+
 <link rel="shortcut icon" href="${ctx }/img/icon.png" type="text/css">
-<link rel="stylesheet" href="${ctx }/css/bootstrap.min.css" />
+<title>EmployHours</title><link rel="stylesheet" href="${ctx }/css/bootstrap.min.css" />
 <link rel="stylesheet" href="${ctx }/css/bootstrap-responsive.min.css" />
 <link rel="stylesheet" href="${ctx }/css/fullcalendar.css" />
 <link rel="stylesheet" href="${ctx }/css/matrix-media.css" />
 <link rel="stylesheet" href="${ctx }/css/matrix-style.css" />
 <link rel="stylesheet" href="${ctx }/font-awesome/css/font-awesome.css" />
 <link rel="stylesheet" href="${ctx }/css/style.css" />
+<link rel="stylesheet" href="${ctx}/js/bootstrap-datepicker/css/datepicker-theme.css" type="text/css"/>
+<script type="text/javascript">
+var basePath='<%=basePath%>';
+</script>
 </head>
 <body>
 <!--Header-part-->
@@ -45,7 +49,7 @@
     </a>
       <ul class="dropdown-menu">
         <li class="divider"></li>
-        <li><a href="javascript:;" onclick="autoWin('登录账户修改','${ctx}/sys/userForm.do?id=${sysuser.id }');"><i class="icon-check"></i> 修改密码</a></li>
+        <li><a href="javascript:;" onclick="autoWin('登录账户修改','${ctx}/sys/userForm.do?id=${sysuser.id }');"><i class="icon-check"></i> 个人信息修改</a></li>
       </ul>
     </li>
     <li class="">
@@ -58,27 +62,48 @@
 <div id="sidebar">
 <a href="#" class="visible-phone"><i class="icon icon-home"></i></a>
   <ul>
-    <li ><a href="javascript:;" onclick="sysUserFirstPage()"><i class="icon icon-home"></i> <span>首页</span></a> </li>
-    <li class="submenu"> <a href="javascript:;"><i class="icon icon-list"></i> <span>系统功能</span></a>
+    <li><a href="javascript:;" onclick="sysUserFirstPage()"><i class="icon icon-home"></i> <span>首页</span></a></li>
+    <li><a href="javascript:;" onclick="autoWin('填报工时','${ctx }/empHour/empHourForm.do')">
+    <i class="icon icon-pencil"></i> 填报工时</a>
+    </li>
+    <li><a href="javascript:;" onclick="pageView('${ctx }/home.do?view=myEmphours')">
+    <i class="icon icon-time"></i> 我的工时</a>
+    </li>
+      <c:if test="${'rs' eq sysuser.dep}">
+     <li class="submenu"><a href="javascript:;"><i class="icon icon-user"></i> <span>员工管理</span></a>
       <ul>
-        <li><a href="javascript:;" onclick="pageView('${ctx }/home.do?view=userList')">系统用户</a></li>
-        <li><a href="javascript:;" onclick="pageView('${ctx }/home.do?view=configList')">系统配置</a></li>
+        <li><a href="javascript:;" onclick="pageView('${ctx }/home.do?view=userList')">员工列表</a></li>
+        <li><a href="javascript:;" onclick="autoWin('添加新员工','${ctx }/sys/userForm.do')">新增员工</a></li>
       </ul>
     </li>
+  
+    <li class="submenu"><a href="javascript:;"><i class="icon icon-time"></i> <span>工时管理</span></a>
+      <ul>
+        <li><a href="javascript:;" onclick="pageView('${ctx }/home.do?view=hoursCheck')">工时审核</a></li>
+        <li><a href="javascript:;" onclick="pageView('${ctx }/home.do?view=hoursList')">工时列表</a></li>
+      </ul>
+    </li>
+    </c:if>
+   <c:if test="${'2' eq sysuser.roles }">
+   <li class="submenu"><a href="javascript:;"><i class="icon icon-th"></i> <span>部门管理</span></a>
+      <ul>
+        <li><a href="javascript:;" onclick="pageView('${ctx }/home.do?view=depUsers')">部门员工</a></li>
+        <li><a href="javascript:;" onclick="pageView('${ctx }/home.do?view=depHoursList')">部门工时</a></li>
+      </ul>
+    </li>
+    </c:if>
+    <c:if test="${'2' eq sysuser.roles and 'rs' eq sysuser.dep}">
+    <li><a href="javascript:;" onclick="pageView('${ctx }/home.do?view=configList')">
+    <i class="icon icon-cog"></i>系统设置</a>
+    </li>
+    </c:if>
   </ul>
 </div>
 <div id="content">
   <div id="content-header">
     <div id="breadcrumb"> 
-    <a href="javascript:;" onclick="pageView('${ctx }/home.do?view=questList')" title="EmployHours" class="tip-bottom">
-    <i class="icon-home"></i>首页</a></div>
-  </div>
-  <div  class="quick-actions_homepage">
-    <ul class="quick-actions">
-      <li class="bg_lb"> <a href="javascript:;" onclick="pageView('${ctx }/home.do?view=questList')"> <i class="icon-list"></i>首页</a> </li>
-      <li class="bg_lg"> <a href="javascript:;" onclick="pageView('${ctx }/home.do?view=userList')"> <i class="icon-user"></i> 系统用户</a> </li>
-      <li class="bg_ly"> <a href="javascript:;" onclick="pageView('${ctx }/home.do?view=configList')"> <i class="icon-cog"></i> 系统配置</a> </li>
-    </ul>
+    <a href="javascript:;" onclick="sysUserFirstPage()" title="EmployHours" class="tip-bottom">
+    <i class="icon-home"></i>EmployHours</a></div>
   </div>
   <div class="container-fluid">
     <div id="pageContent" class="row-fluid"></div>
@@ -105,6 +130,19 @@
     </div>
   </div>
 </div>
+<div class="modal fade" id="msgModal" tabindex="-1" role="dialog" aria-labelledby="msgModalLabel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title"></h4>
+      </div>
+      <div class="modal-body">
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
 <script src="${ctx }/js/jquery.min.js"></script> 
 <script src="${ctx }/js/jquery.ui.custom.js"></script> 
 <script src="${ctx }/js/bootstrap.min.js"></script> 
@@ -116,6 +154,10 @@
 <script src="${ctx }/js/util/ajax.js"></script> 
 <script src="${ctx }/js/util/dialogHintWin.js"></script> 
 <script src="${ctx }/js/util/loadPage.js"></script> 
+<script src="${ctx }/js/util/customValid.js"></script> 
+<script src="${ctx }/js/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>	
+<script src="${ctx }/js/bootstrap-datepicker/js/locales/bootstrap-datepicker.zh-CN.js"></script>
+
 <script type="text/javascript">
 	var sysUser = {
 			userId:"${sysuser.id}",
@@ -123,17 +165,31 @@
 			name:"${sysuser.name}",
 			roles:"${sysuser.roles}"
 	};
-	
+	var depName={
+			xs:'销售部',
+			rs:'人事部',
+			js:'技术部'
+	};
+	var hourStatus={
+			'0':'提交审核',
+			'1':'审核通过',
+			'2':'不通过'
+	};
 	$(function(){
-		
+		sysUserFirstPage();
 	});
 	function sysUserFirstPage(){
 		var initMenu="";
 		if(sysUser.roles=="0"){
 			initMenu = "configList";
 		}else if(sysUser.roles=="1"){
-			initMenu="";
+			initMenu="hoursCheck";
+		}else if(sysUser.roles=="2"){
+			initMenu="depUsers";
+		}else if(sysUser.roles=="3"){
+			initMenu="myEmphours";
 		}
+		pageView('${ctx }/home.do?view='+initMenu);
 	}
 </script>
 </body>

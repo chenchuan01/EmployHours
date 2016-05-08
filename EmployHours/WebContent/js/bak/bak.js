@@ -32,6 +32,31 @@ function setContent(html){
 	page(1);
 	bootstrapInit();
 }
+function delBatch(uri){
+	var delIds = '';
+	$('input[type="checkbox"]:checked').each(function(){
+		delIds = delIds+$(this).val()+',';
+	});
+	ajaxData(basePath+uri,{delIds:delIds},
+			function(){
+			page(1);
+		});
+}
+function hoursCheck(uri,type,checkType){
+	var params ={};
+	if('single'==type){
+		params ={checkFlag:checkType};
+	}else if('batch'==type){
+		var ids='';
+		$('input[type="checkbox"]:checked').each(function(){
+			ids = ids+$(this).val()+',';
+		});
+		params ={id:ids,checkFlag:checkType};
+	}
+	ajaxData(uri,params,function(){
+		page(1);
+	});
+}
 function goPage (newURL) {
     // if url is empty, skip the menu dividers and reset the menu selection to default
     if (newURL != "") {
@@ -93,8 +118,9 @@ var doSaveInfo =function(){
 var save=function(formId){
 	var params = getParams(formId);
 	ajaxData(getUrl(formId),params,function(){
+		closeMsg();
 		cfm('保存修改成功！是否关闭对话框？',function(){
-			$('#formModal').modal('toggle');
+			closeInfo();
 			page(1);
 		});
 	});
@@ -108,7 +134,8 @@ var deleteItem=function(url){
 var doDelete=function(){
 	ajaxData(deleteUrl, {},
 	function(){
-		refresh();
+		closeInfo();
+		page(1);
 	});
 };
 var info=function(msg){
@@ -215,10 +242,14 @@ var $singledData= function(dataMap,filed){
  * 获得属性值
  */
 var $getDataVal=function(dataMap,filed){
-	if('zone'==filed){
-		return zone_index[dataMap[filed]];
-	}else if('filed'==filed){
-		return filed_index[dataMap[filed]];
+	//特殊处理会员卡类型和赠送会籍单位
+	if(filed!=null&&filed!=""){
+		var type = dataMap[filed];
+		if('dep'==filed||'empdep'==filed){
+			return depName[type];
+		}else if('status'==filed){
+			return hourStatus[type];
+		}
 	}
 	return dataMap[filed];
 };

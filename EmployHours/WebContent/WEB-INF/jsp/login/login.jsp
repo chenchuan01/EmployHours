@@ -32,6 +32,10 @@ var basePath = '<%=basePath%>';
 <script src="${ctx }/js/bootstrap.min.js"></script>
 <script src="${ctx }/js/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>	
 <script src="${ctx }/js/bootstrap-datepicker/js/locales/bootstrap-datepicker.zh-CN.js"></script>
+<script src="${ctx }/js/util/ajax.js"></script> 
+<script src="${ctx }/js/util/dialogHintWin.js"></script> 
+<script src="${ctx }/js/util/loadPage.js"></script> 
+<script src="${ctx }/js/util/customValid.js"></script> 
 <script src="${ctx }/js/common.js"></script>
 
 <script type="text/javascript">

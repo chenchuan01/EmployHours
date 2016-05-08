@@ -1,4 +1,136 @@
-﻿/**common*/
+﻿/**global_var*/
+/**
+ * 空值占位符
+ */
+var NONE_VAL_FLAG = '';
+/**
+ * 值间占位
+ */
+var VAL_FLAG='-';
+/**
+ * 属性中从属属性分割符‘.’
+ */
+var FILED_SPLIT = '.';
+/**
+ * 多个属性分割符‘,’
+ */
+var FILEDS_SPLIT = ',';
+/**
+ * 配置多个值之间分隔符‘;’
+ */
+var CONFIG_VAL_SPLIT = ';';
+/**
+ * 配置映射分割符‘:’
+ */
+var CONFIG_TO_SPLIT = ':';
+
+function pageView(url){
+	ajaxHtml(url, {}, setContent, function(){});
+}
+function setContent(html){
+	$('#pageContent').html(html);
+	page(1);
+	bootstrapInit();
+}
+function goPage (newURL) {
+    // if url is empty, skip the menu dividers and reset the menu selection to default
+    if (newURL != "") {
+        // if url is "-", it is this page -- reset the menu:
+        if (newURL == "-" ) {
+            resetMenu();            
+        } 
+        // else, send page to designated URL            
+        else {  
+          document.location.href = newURL;
+        }
+    }
+}
+function delBatch(uri){
+	var delIds = '';
+	$('input[type="checkbox"]:checked').each(function(){
+		delIds = delIds+$(this).val()+',';
+	});
+	ajaxData(basePath+uri,{delIds:delIds},function(){page(1);});
+}
+//resets the menu selection upon entry to this page:
+function resetMenu() {
+ document.gomenu.selector.selectedIndex = 2;
+}
+/************Parameter DATA**************/
+function getParams(formId){
+	var params={};
+	if(formId){
+		$(formId+' input[name],'+formId+' textarea[name],'+formId+' select[name]').each(function(){
+			var name =$(this).attr('name');
+			var value =$(this).val();
+			if(name!='undefined'&&value!='undefined'){
+				if($(this).attr('type')!='checkbox'){
+					params[name]=value;
+				}
+				
+			}
+		});
+		$(formId+' input[type="checkbox"]:checked,'+formId+' input[type="radio"]:checked').each(function(){
+			params[$(this).attr('name')]=$(this).val();
+		});
+	}else{
+		$('input[name],textarea[name],select[name]').each(function(){
+			var name =$(this).attr('name');
+			var value =$(this).val();
+			if(name!='undefined'&&value!='undefined'){
+				params[name]=value;
+			}
+		});
+		$('input[type="checkbox"]:checked,input[type="radio"]:checked').each(function(){
+			params[$(this).attr('name')]=$(this).val();
+		});
+	}
+	return params;
+}
+/************Save DATA**************/
+var saveInfo=function(formId,saveFun){
+	valid(formId, saveFun);
+};
+var doSaveInfo =function(){
+	var params = getParams();
+	ajaxLoad(getUrl(), params);
+};
+
+var save=function(formId){
+	var params = getParams(formId);
+	ajaxData(getUrl(formId),params,function(){
+		closeMsg();
+		cfm('保存修改成功！是否关闭对话框？',function(){
+			closeInfo();
+			page(1);
+		});
+	});
+};
+/************DELETE DATA**************/
+var deleteUrl;
+var deleteItem=function(url){
+	deleteUrl=url;
+	cfm("确认删除此条信息？",doDelete);
+};
+var doDelete=function(){
+	ajaxData(deleteUrl, {},
+	function(){
+		closeInfo();
+		page(1);
+	});
+};
+var info=function(msg){
+	alert(msg);
+};
+var cfm=function(msg,suc,err){
+	if(confirm(msg)){
+		if(suc)
+		suc();
+	}else{
+		if(err)
+		err();
+	}
+};
 /**
  * import
  */
@@ -86,67 +218,16 @@ var $singledData= function(dataMap,filed){
 		return $isMapNull(dataMap,filed)?NONE_VAL_FLAG:$getDataVal(dataMap,filed);
 	}
 	
-};
-function pageView(url){
-	ajaxHtml(url, {}, setContent, function(){});
-}
-function setContent(html){
-	$('#pageContent').html(html);
-	page(1);
-	bootstrapInit();
-}
-function goPage (newURL) {
-    // if url is empty, skip the menu dividers and reset the menu selection to default
-    if (newURL != "") {
-        // if url is "-", it is this page -- reset the menu:
-        if (newURL == "-" ) {
-            resetMenu();            
-        } 
-        // else, send page to designated URL            
-        else {  
-          document.location.href = newURL;
-        }
-    }
-}
-
-//resets the menu selection upon entry to this page:
-function resetMenu() {
- document.gomenu.selector.selectedIndex = 2;
-}
+}; 
 /**
  * 获得属性值
  */
 var $getDataVal=function(dataMap,filed){
 	//特殊处理会员卡类型和赠送会籍单位
 	if(filed!=null&&filed!=""){
-		if(specialFileds.type==filed){
+		if('dep'==filed){
 			var type = dataMap[filed];
-			return g_cardType[type];
-		}else if(specialFileds.givemetric==filed){
-			return g_dateMetric[dataMap[filed]];
-		}else if(specialFileds.timeindex==filed){
-			var timeArry = dataMap[filed];
-			var timeIndexs = "";
-			for (var int = 0; int < timeArry.length; int++) {
-				if(int==timeArry.length-1){
-					timeIndexs=timeIndexs+timeIndexMap[timeArry[int]];
-				}else{
-					timeIndexs=timeIndexs+timeIndexMap[timeArry[int]]+",";
-				}
-				
-			}
-			return timeIndexs;
-		}else if(specialFileds.weekday==filed){
-			var weekArry = dataMap[filed];
-			var weekDays = "";
-			for (var int = 0; int < weekArry.length; int++) {
-				if(int==weekArry.length-1){
-					weekDays=weekDays+weekDayMap[weekArry[int]];
-				}else{
-					weekDays=weekDays+weekDayMap[weekArry[int]]+",";
-				}
-			}
-			return weekDays;
+			return depName[type];
 		}
 	}
 	return dataMap[filed];
@@ -182,77 +263,4 @@ var commFillInfo = function(dataMap,selector,type){
 			showFiled.attr('src',orginalSrc);
 		}
 	});
-};
-/**Ajax 封装*/
-$import(basePath+'js/util/ajax.js');
-/**自定义验证 封装*/
-$import(basePath+'js/util/customValid.js');
-/**照片保存 封装*/
-/**对话框、提示框 封装*/
-$import(basePath+'js/util/dialogHintWin.js');
-/**people信息查询 
-/**页面初始化 封装*/
-$import(basePath+'js/util/loadPage.js');
-
-/************Test DATA**************/
-var showTest=function(){
-	$(".dataTest").toggle();
-};
-/************Parameter DATA**************/
-function getParams(formId){
-	var params={};
-	if(formId){
-		$(formId+' input[name],'+formId+' textarea[name],'+formId+' select[name]').each(function(){
-			var name =$(this).attr('name');
-			var value =$(this).val();
-			if(name!='undefined'&&value!='undefined'){
-				if($(this).attr('type')!='checkbox'){
-					params[name]=value;
-				}
-				
-			}
-		});
-		$(formId+' input[type="checkbox"]:checked,'+formId+' input[type="radio"]:checked').each(function(){
-			params[$(this).attr('name')]=$(this).val();
-		});
-	}else{
-		$('input[name],textarea[name],select[name]').each(function(){
-			var name =$(this).attr('name');
-			var value =$(this).val();
-			if(name!='undefined'&&value!='undefined'){
-				params[name]=value;
-			}
-		});
-		$('input[type="checkbox"]:checked,input[type="radio"]:checked').each(function(){
-			params[$(this).attr('name')]=$(this).val();
-		});
-	}
-	return params;
-}
-/************Save DATA**************/
-var saveInfo=function(formId,saveFun){
-	valid(formId, saveFun);
-};
-var doSaveInfo =function(){
-	var params = getParams();
-	ajaxLoad(getUrl(), params);
-};
-
-var save=function(formId){
-	var params = getParams(formId);
-	ajaxLoad(getUrl(formId),params,function(){
-		cfm('保存修改成功！是否关闭对话框？',function(){
-			$('#formModal').modal('toggle');
-			page(1);
-		});
-	});
-};
-/************DELETE DATA**************/
-var deleteUrl;
-var deleteItem=function(url){
-	deleteUrl=url;
-	cfm("确认删除此条信息？",doDelete);
-};
-var doDelete=function(){
-	ajaxLoad(deleteUrl, {}, function(){page(1);});
 };

@@ -19,4 +19,25 @@ public class EmpConstants {
 	 * MENU_CONFIGLIST
 	 */
 	public static final String MENU_CONFIGLIST="configList";
+	/**
+	 * HOURSCHECK
+	 */
+	public static final String HOURSCHECK = "hoursCheck";
+	/**
+	 * HOURSLIST
+	 */
+	public static final String HOURSLIST = "hoursList";
+	/**
+	 * DEPUSERS
+	 */
+	public static final String DEPUSERS = "depUsers";
+	/**
+	 * MYHOURS
+	 */
+	public static final String MYHOURS = "myEmphours";
+	/**
+	 * DEPHOURSLIST
+	 */
+	public static final String DEPHOURSLIST = "depHoursList";
+	
 }

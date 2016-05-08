@@ -10,6 +10,13 @@ var initOther=function(){
 	cleanForm();
     /**bootstrap mual init*/
    bootstrapInit();
+   $(".datepickerInput").datepicker(
+			{ 
+			language: 'zh-CN',
+	        autoclose: true,
+	        todayHighlight: true,
+	        format: 'yyyy-mm-dd'
+	       });
 };
 var cleanForm=function(){
 	$('.cancel').click(function(){
@@ -117,6 +124,10 @@ var jspLoadPageDatas=function(data){
 				var itemFiled = tdObj.attr('itemFiled');
 				var itemId = $getDataFiled(dataMap, itemFiled);
 				content = genOpreaHtml($(tdObjs[col]).html(),itemId);
+			}else if('checkBox'==item){
+				var itemFiled = tdObj.attr('itemFiled');
+				var itemId = $getDataFiled(dataMap, itemFiled);
+				content = genCheckHtml($(tdObjs[col]).html(),itemId);
 			}else{
 				content = $getDataFiled(dataMap,item);
 			}
@@ -141,6 +152,9 @@ var genOpreaHtml = function(aStrs,itemId){
 		newOpStrs=newOpStrs+"id="+itemId+opStrs[i].substring(opStrs[i].indexOf('\''),opStrs[i].length);
 	}
 	return newOpStrs;
+};
+var genCheckHtml = function(checkStrs,itemId){
+	return checkStrs.replace('#itemId',itemId);
 };
 
 var clearTable=function(){
